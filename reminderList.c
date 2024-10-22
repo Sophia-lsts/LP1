@@ -88,5 +88,6 @@ int main(){
     printf("Reminder Mounth List\n");
     for(i=0;i<count;i++){
         printf("%s\n", reminders[i]);
+        free(reminders[i]); //liberar a memória alocada
     }
 }
