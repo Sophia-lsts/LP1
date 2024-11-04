@@ -3,7 +3,12 @@
 #include <time.h>
 
 #define lin 5
+/*
 
+revelados tudo tem -1
+
+
+*/
 void timer(/*parametro encontrou bomba ou ganhou*/){
 
     int segundos = 0;
@@ -22,28 +27,35 @@ void timer(/*parametro encontrou bomba ou ganhou*/){
 
 }
 
-typedef struct {
-    int branco;
-} nada;
+int M[lin][lin];
+int revelados[lin][lin];
 
-nada M[lin][lin];
-
-/*void preencheCampo(){
+void preencheCampo(){
     int i;
     int j;
 
 
     srand(time(NULL));
 
+}
 
+void verificaCoordenadas(int i, int j){
 
-}*/
+    if(i > 4 || i < 0 || j > 4 || j < 0) return 0;
+    else if (M[i][j] != 0) {
+
+    }
+    else return 1;
+
+}
 
 void testeRecursao(int i, int j){
 
-    if(M[i][j].branco == 0){
-        M[i][j].branco = 0;
-
+    if(M[i][j] != 0){
+        revelados[i][j] = M[i][j];
+    }
+    else if(M[i][j] == 0){
+        revelados[i][j] = 0;
         testeRecursao(i-1,j+1);
         testeRecursao(i-1,j-1);
         testeRecursao(i-1, j);
@@ -54,6 +66,7 @@ void testeRecursao(int i, int j){
         testeRecursao(i+1, j);
     }
 
+    
 }
 
 int main(){
@@ -65,14 +78,15 @@ int main(){
 
     for(i=0;i<lin;i++){
         for(j=0;j<lin;j++){
-            scanf("%d", &M[i][j].branco);
+            scanf("%d", &M[i][j]);
+            revelados[i][j] = -1;
         }
     }
 
     for(i=0;i<lin;i++){
         printf("\n");
         for(j=0;j<lin;j++){
-            printf(" %d ", M[i][j].branco);
+            printf(" %d ", M[i][j]);
         }
     }
 
@@ -86,7 +100,10 @@ int main(){
     for(i=0;i<lin;i++){
         printf("\n");
         for(j=0;j<lin;j++){
-            printf(" %d ", M[i][j].branco);
+            if(revelados[i][j] == 0){
+            printf("  ");
+            }
+
         }
     }
 
