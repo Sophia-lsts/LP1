@@ -14,23 +14,6 @@ int revelados[lin][lin];
     return 1; 
 } */
 
-/*void testeRecursao(int i, int j) {
-    if (!verificaCoordenadas(i, j)) return;
-
-    revelados[i][j] = M[i][j];
-
-    if (M[i][j] == 0) {
-        testeRecursao(i-1, j);
-        testeRecursao(i+1, j);
-        testeRecursao(i, j-1);
-        testeRecursao(i, j+1);
-        testeRecursao(i-1, j-1);
-        testeRecursao(i-1, j+1);
-        testeRecursao(i+1, j-1);
-        testeRecursao(i+1, j+1);
-    }
-}*/
-
 int main() {
 
     int i, j;
