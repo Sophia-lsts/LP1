@@ -7,6 +7,14 @@
 int M[lin][lin];
 int revelados[lin][lin];
 
+void clean(){
+    #ifdef _WIN32
+        system("cls");
+    #else 
+        system("clear");
+    #endif
+}
+
 /*void timer(parametro encontrou bomba ou ganhou)
 
     int segundos = 0;
@@ -38,17 +46,30 @@ void preencheCampo(){
 
 void plantaBomba(){
 
-    M[0][0] = 0;
-    M[0][1] = 0;
-    M[1][0] = 0;
-    M[1][1] = 0;
+    int quantBomb = 0;
+    int linBomb;
+    int colBomb;
+
+    srand(time(NULL));
+
+    while(quantBomb < 5){
+
+        do{
+            linBomb = ((rand() % 5) + 1);
+            colBomb = ((rand() % 5) + 1);
+            }
+        while((M[linBomb][colBomb] == -2)); //não plantar 2 bombas no mesmo lugar
+    
+        M[linBomb][colBomb] = -2;
+        quantBomb++;
+        
+    }
 
 }
 
 int verificaCoordenadas(int i, int j) {
-    if (i < 0 || i >= lin || j < 0 || j >= lin || M[i][j] != 0 || revelados[i][j] != -1) {
-        return 0; 
-    }
+    if (i < 0 || i >= lin || j < 0 || j >= lin) return 0; 
+    //else if(M[i][j] != 0 || revelados[i][j] != -1) return 0;
     return 1; 
 }
 
@@ -58,12 +79,20 @@ int main(){
     int linha, coluna;
 
     preencheCampo();
+    plantaBomba();
 
-
-    printf("lin  ");
-    scanf("%d", &linha);
-    printf("col  ");
-    scanf("%d", &coluna);
+    do{
+        printf("lin  ");
+        scanf("%d", &linha);
+        printf("col  ");
+        scanf("%d", &coluna);
+        if(verificaCoordenadas(linha,coluna) == 0) {
+            printf("Digite coordenadas válidas\n");
+            sleep(1);
+            clean();
+            }
+    }
+    while(verificaCoordenadas(linha,coluna) == 0);
 
     revelados[linha][coluna] = M[linha][coluna];
 
