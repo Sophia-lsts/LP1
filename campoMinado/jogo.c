@@ -2,11 +2,16 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
-#define tamCampo 10
+#define tamCampo 5
+
+enum casas {Vazio = 0, umaProx = 1, duasProx = 2, tresProx = 3, quatroProx = 4, naoRevelado = 4, Bomba = 5};
 
 int M[tamCampo][tamCampo];
-int revelados[tamCampo][tamCampo];
-enum casas {Vazio = 0, umaProx = 1, duasProx = 2, tresProx = 3, quatroProx = 4, naoRevelado = -1, Bomba = -2};
+int revelados[tamCampo][tamCampo] = {naoRevelado,naoRevelado,naoRevelado,naoRevelado,naoRevelado,
+                                    naoRevelado,naoRevelado,naoRevelado,naoRevelado,naoRevelado,
+                                    naoRevelado,naoRevelado,naoRevelado,naoRevelado,naoRevelado,
+                                    naoRevelado,naoRevelado,naoRevelado,naoRevelado,naoRevelado,
+                                    naoRevelado,naoRevelado,naoRevelado,naoRevelado,naoRevelado};
 
 void clean(){
     #ifdef _WIN32
@@ -80,7 +85,7 @@ void preencheCampo(){
 
      for (int i = 0; i < tamCampo; i++) {
         for (int j = 0; j < tamCampo; j++) {
-            if(M[i][j] != -2) verificaVizinhos(i,j);
+            if(M[i][j] != Bomba) verificaVizinhos(i,j);
         }
      }
 
@@ -94,11 +99,11 @@ void plantaBomba(){
 
     srand(time(NULL));
 
-    while(quantBombT < 10){
+    while(quantBombT < 3){
 
         do{
-            linBomb = ((rand() % 9) + 1); //antes tava mod 5 + 1, o que poderia gerar índice fora da matriz
-            colBomb = ((rand() % 9) + 1);
+            linBomb = ((rand() % tamCampo)); //antes tava mod 5 + 1, o que poderia gerar índice fora da matriz
+            colBomb = ((rand() % tamCampo));
             }
         while((M[linBomb][colBomb] == Bomba)); //não plantar 2 bombas no mesmo lugar
     
@@ -107,6 +112,25 @@ void plantaBomba(){
         
     }
 
+}
+
+void revela(int linha, int coluna){
+
+    if (!verificaCoordenadas(linha, coluna)) return;
+
+    if (M[linha][coluna] == Vazio) {
+        revelados[linha][coluna] = Vazio;
+    } else {
+        return;
+    }
+
+    for (int i = linha - 1; i <= linha + 1; i++) {
+        for (int j = coluna - 1; j <= coluna + 1; j++) {
+                if(!verificaCoordenadas(i,j)) continue;
+                if (revelados[i][j] != Vazio) revela(i, j);
+            }
+        }
+    
 }
 
 int main(){
@@ -130,35 +154,39 @@ int main(){
     }
     while(verificaCoordenadas(linha,coluna) == 0);
 
-    revelados[linha][coluna] = M[linha][coluna];
-
-    if(revelados[linha][coluna] == Bomba){
-        printf("Você selecionou um local com bomba.\nVocê perdeu");
-        exit(1);
+    switch(M[linha][coluna]){
+        case Bomba:
+            printf("Você selecionou um local com bomba.\nVocê perdeu");
+            exit(1);
+        case Vazio:
+            revela(linha,coluna);
+            break;
+        default:
+            revelados[linha][coluna] = M[linha][coluna];
     }
-    
-    printf("\n    |");
+
+    printf("\n   |");
     for (int i = 0; i < tamCampo; i++) printf(" %d |",i);
-    printf("\n--------------------------------------------");
+    printf("\n-------------------------");
     for (int i = 0; i < tamCampo; i++) {
         printf("    \n");
         printf(" %d |",i);
         for (int j = 0; j < tamCampo; j++) {
             if(j == tamCampo -1){
-                if(revelados[i][j] != -1){
-                    printf(" %d |\n", M[i][j]);
-                    printf("--------------------------------------------");
+                if(revelados[i][j] != naoRevelado){
+                    printf(" %d |\n", revelados[i][j]);
+                    printf("------------------------");
                 }
                 else {
                     printf("   |\n");
-                    printf("--------------------------------------------");
+                    printf("------------------------");
                 }
             }
-            else if (revelados[i][j] == -1){
+            else if (revelados[i][j] == naoRevelado){
                  printf("   |"); 
                  }// n foi revelado
             else {
-                printf(" %d |", M[i][j]);
+                printf(" %d |", revelados[i][j]);
             }
         }
     }

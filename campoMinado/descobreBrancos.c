@@ -28,14 +28,14 @@ void revela(int linha, int coluna){
     if (revelados[linha][coluna] == 0) return;
 
     if (M[linha][coluna] == Vazio) {
-        revelados[linha][coluna] = Vazio;
+        revelados[linha][coluna] = 0;
     } else {
         return;
     }
 
     for (i = linha - 1; i <= linha + 1; i++) {
         for (j = coluna - 1; j <= coluna + 1; j++) {
-            if (verificaCoordenada(i, j) == 0 && revelados[i][j] != 0) {
+            if (verificaCoordenada(i, j) == 0 && revelados[i][j] != Vazio) {
                 revela(i, j);
             }
         }
@@ -62,3 +62,5 @@ int main(){
 
     return 0;
 }
+
+//revelados[linha][coluna] = M[linha][coluna];
