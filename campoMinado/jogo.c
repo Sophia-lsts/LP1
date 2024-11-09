@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
-#define lin 5
+#define tamCampo 10
 
-int M[lin][lin];
-int revelados[lin][lin];
+int M[tamCampo][tamCampo];
+int revelados[tamCampo][tamCampo];
+enum casas {Vazio = 0, umaProx = 1, duasProx = 2, tresProx = 3, quatroProx = 4, naoRevelado = -1, Bomba = -2};
 
 void clean(){
     #ifdef _WIN32
@@ -29,48 +30,83 @@ void clean(){
     };
 */
 
+int verificaCoordenadas(int linha, int coluna) {
+    if (linha < 0 || linha >= tamCampo || coluna < 0 || coluna >= tamCampo) return 0; 
+    //else if(M[i][j] != 0 || revelados[i][j] != -1) return 0;
+    return 1; 
+}
+
+void verificaVizinhos(int linha, int coluna){
+
+    int i,j;
+    int quantBomb = 0;
+
+
+    for (i = linha - 1; i <= linha + 1; i++) {
+        for (j = coluna - 1; j <= coluna + 1; j++) {
+            if(i == linha && j == coluna) continue;
+            if(M[i][j] == Bomba && verificaCoordenadas(i,j) == 1) quantBomb++;
+        }
+    }
+
+    switch(quantBomb){
+        case 0:
+            M[linha][coluna] = Vazio;
+            break;
+        case 1:
+            M[linha][coluna] = umaProx;
+            break;
+        case 2:
+            M[linha][coluna] = duasProx;
+            break;
+        case 3:
+            M[linha][coluna] = tresProx;
+            break;
+        case 4:
+            M[linha][coluna] = quatroProx;
+            break;
+        default:
+            M[linha][coluna] = Vazio;
+            break;
+    }
+    
+
+}
+
 void preencheCampo(){
+
     int i;
     int j;
 
-    srand(time(NULL));
-
-    for(i=0;i<lin;i++){
-        for(j=0;j<lin;j++){
-            M[i][j] = ((rand() % 5) + 1);
-            revelados[i][j] = -1;
+     for (int i = 0; i < tamCampo; i++) {
+        for (int j = 0; j < tamCampo; j++) {
+            if(M[i][j] != -2) verificaVizinhos(i,j);
         }
-    }
+     }
 
 }
 
 void plantaBomba(){
 
-    int quantBomb = 0;
+    int quantBombT = 0;
     int linBomb;
     int colBomb;
 
     srand(time(NULL));
 
-    while(quantBomb < 5){
+    while(quantBombT < 10){
 
         do{
-            linBomb = ((rand() % 5) + 1);
-            colBomb = ((rand() % 5) + 1);
+            linBomb = ((rand() % 9) + 1); //antes tava mod 5 + 1, o que poderia gerar índice fora da matriz
+            colBomb = ((rand() % 9) + 1);
             }
-        while((M[linBomb][colBomb] == -2)); //não plantar 2 bombas no mesmo lugar
+        while((M[linBomb][colBomb] == Bomba)); //não plantar 2 bombas no mesmo lugar
     
-        M[linBomb][colBomb] = -2;
-        quantBomb++;
+        quantBombT++;
+        M[linBomb][colBomb] = Bomba;
         
     }
 
-}
-
-int verificaCoordenadas(int i, int j) {
-    if (i < 0 || i >= lin || j < 0 || j >= lin) return 0; 
-    //else if(M[i][j] != 0 || revelados[i][j] != -1) return 0;
-    return 1; 
 }
 
 int main(){
@@ -78,8 +114,8 @@ int main(){
     //timer();
     int linha, coluna;
 
-    preencheCampo();
     plantaBomba();
+    preencheCampo();
 
     do{
         printf("lin  ");
@@ -96,20 +132,26 @@ int main(){
 
     revelados[linha][coluna] = M[linha][coluna];
 
-    printf("   | 0   1   2   3   4\n");
-    printf("------------------------");
-    for (int i = 0; i < lin; i++) {
+    if(revelados[linha][coluna] == Bomba){
+        printf("Você selecionou um local com bomba.\nVocê perdeu");
+        exit(1);
+    }
+    
+    printf("\n    |");
+    for (int i = 0; i < tamCampo; i++) printf(" %d |",i);
+    printf("\n--------------------------------------------");
+    for (int i = 0; i < tamCampo; i++) {
         printf("    \n");
         printf(" %d |",i);
-        for (int j = 0; j < lin; j++) {
-            if(j == lin -1){
+        for (int j = 0; j < tamCampo; j++) {
+            if(j == tamCampo -1){
                 if(revelados[i][j] != -1){
                     printf(" %d |\n", M[i][j]);
-                    printf("------------------------");
+                    printf("--------------------------------------------");
                 }
                 else {
                     printf("   |\n");
-                    printf("------------------------");
+                    printf("--------------------------------------------");
                 }
             }
             else if (revelados[i][j] == -1){
@@ -120,6 +162,8 @@ int main(){
             }
         }
     }
+
+    printf("\n\n");
 
     return 0;
 

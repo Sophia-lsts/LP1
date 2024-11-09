@@ -2,17 +2,19 @@
 
 //falta implementar lógica das quinas pra evitar erros
 
-int M[5][5] = {1,1,1,1,0,
-               0,0,1,0,0,
-               0,0,0,1,1,
-               0,0,1,1,1,
-               1,1,1,1,1};
+enum casas {Vazio = 0, Outros = 1, naoRevelado = 2};
 
-int revelados[5][5] = {2,2,2,2,2,
-                       2,2,2,2,2,
-                       2,2,2,2,2,
-                       2,2,2,2,2,
-                       2,2,2,2,2};
+int M[5][5] = {Outros,Outros,Outros,Outros,Vazio,
+               Vazio,Vazio,Outros,Vazio,Vazio,
+               Vazio,Vazio,Vazio,Outros,Outros,
+               Vazio,Vazio,Outros,Outros,Outros,
+               Outros,Outros,Outros,Outros,Outros};
+
+int revelados[5][5] = {naoRevelado,naoRevelado,naoRevelado,naoRevelado,naoRevelado,
+                       naoRevelado,naoRevelado,naoRevelado,naoRevelado,naoRevelado,
+                       naoRevelado,naoRevelado,naoRevelado,naoRevelado,naoRevelado,
+                       naoRevelado,naoRevelado,naoRevelado,naoRevelado,naoRevelado,
+                       naoRevelado,naoRevelado,naoRevelado,naoRevelado,naoRevelado};
 
 int verificaCoordenada(int linha, int coluna){
     if(linha > 4 || linha < 0 || coluna > 4 || coluna < 0) return 1;
@@ -25,8 +27,8 @@ void revela(int linha, int coluna){
     if (verificaCoordenada(linha, coluna)) return;
     if (revelados[linha][coluna] == 0) return;
 
-    if (M[linha][coluna] == 0) {
-        revelados[linha][coluna] = 0;
+    if (M[linha][coluna] == Vazio) {
+        revelados[linha][coluna] = Vazio;
     } else {
         return;
     }
@@ -53,7 +55,7 @@ int main(){
     for (i = 0; i < 5; i++) {
         printf("\n");
         for (j = 0; j < 5; j++) {
-            if(revelados[i][j] != 2) printf(" %d ", revelados[i][j]);
+            if(revelados[i][j] != naoRevelado) printf(" %d ", revelados[i][j]);
             else printf("   ");
         }
     }
