@@ -4,6 +4,9 @@
 #include <time.h>
 #define tamCampo 5
 
+// ponteiro para armazenar quantidade de casas que o jogador conseguiu revelar
+// struct para toda parte de arquivo, alocar memória pra ele e liberar depois de fechar o arquivo
+
 enum casas {Vazio = 0, umaProx = 1, duasProx = 2, tresProx = 3, quatroProx = 4, naoRevelado = 4, Bomba = 5};
 
 int M[tamCampo][tamCampo];
@@ -116,18 +119,20 @@ void plantaBomba(){
 
 void revela(int linha, int coluna){
 
-    if (!verificaCoordenadas(linha, coluna)) return;
+    if (!verificaCoordenadas(linha, coluna)) return; //desnecessário já que ocorre essa verificação antes de chamar essa função
 
     if (M[linha][coluna] == Vazio) {
         revelados[linha][coluna] = Vazio;
     } else {
-        return;
+        return; //não chegar a recursão em células diferentes das vazias
     }
 
     for (int i = linha - 1; i <= linha + 1; i++) {
         for (int j = coluna - 1; j <= coluna + 1; j++) {
                 if(!verificaCoordenadas(i,j)) continue;
                 if (revelados[i][j] != Vazio) revela(i, j);
+                /*revelados[i][j] != Vazio, para não chamar recursão de novo em células já vazias e reveladas,
+                se essa condição for verdadeira, os revelados[i][j] == naoRevelados entrarão, sobre números revelados, nem chegarão aqui*/
             }
         }
     
@@ -137,60 +142,68 @@ int main(){
 
     //timer();
     int linha, coluna;
+    int lose = 1;
 
     plantaBomba();
     preencheCampo();
 
-    do{
-        printf("lin  ");
-        scanf("%d", &linha);
-        printf("col  ");
-        scanf("%d", &coluna);
-        if(verificaCoordenadas(linha,coluna) == 0) {
-            printf("Digite coordenadas válidas\n");
-            sleep(1);
-            clean();
-            }
-    }
-    while(verificaCoordenadas(linha,coluna) == 0);
 
-    switch(M[linha][coluna]){
-        case Bomba:
-            printf("Você selecionou um local com bomba.\nVocê perdeu");
-            exit(1);
-        case Vazio:
-            revela(linha,coluna);
-            break;
-        default:
-            revelados[linha][coluna] = M[linha][coluna];
-    }
-
-    printf("\n   |");
-    for (int i = 0; i < tamCampo; i++) printf(" %d |",i);
-    printf("\n-------------------------");
-    for (int i = 0; i < tamCampo; i++) {
-        printf("    \n");
-        printf(" %d |",i);
-        for (int j = 0; j < tamCampo; j++) {
-            if(j == tamCampo -1){
-                if(revelados[i][j] != naoRevelado){
-                    printf(" %d |\n", revelados[i][j]);
-                    printf("------------------------");
+    while(lose){
+        do{
+            printf("\nlin  ");
+            scanf("%d", &linha);
+            printf("col  ");
+            scanf("%d", &coluna);
+            if(!verificaCoordenadas(linha,coluna)) {
+                printf("Digite coordenadas válidas\n");
+                sleep(1);
                 }
+        }
+        while(!verificaCoordenadas(linha,coluna));
+
+        switch(M[linha][coluna]){
+            case Bomba:
+                printf("Você selecionou um local com bomba.\nVocê perdeu");
+                sleep(2);
+                lose = 0;
+                clean();
+                break; //colocar uma variável pra indicar q perdeu
+            case Vazio:
+                revela(linha,coluna);
+                break;
+            default:
+                revelados[linha][coluna] = M[linha][coluna];
+        }
+
+        clean();
+
+        printf("\n   |");
+        for (int i = 0; i < tamCampo; i++) printf(" %d |",i);
+        printf("\n-------------------------");
+        for (int i = 0; i < tamCampo; i++) {
+            printf("    \n");
+            printf(" %d |",i);
+            for (int j = 0; j < tamCampo; j++) {
+                if(j == tamCampo -1){
+                    if(revelados[i][j] != naoRevelado){
+                        printf(" %d |\n", revelados[i][j]);
+                        printf("------------------------");
+                    }
+                    else {
+                        printf("   |\n");
+                        printf("------------------------");
+                    }
+                }
+                else if (revelados[i][j] == naoRevelado){
+                    printf("   |"); 
+                    }
                 else {
-                    printf("   |\n");
-                    printf("------------------------");
+                    printf(" %d |", revelados[i][j]);
                 }
-            }
-            else if (revelados[i][j] == naoRevelado){
-                 printf("   |"); 
-                 }// n foi revelado
-            else {
-                printf(" %d |", revelados[i][j]);
             }
         }
-    }
 
+    }
     printf("\n\n");
 
     return 0;
