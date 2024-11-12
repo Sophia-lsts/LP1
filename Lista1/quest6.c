@@ -1,28 +1,46 @@
+/*Faça uma função em C que:
+- Recebe 3 parâmetros: um vetor de inteiros, um número inteiro n passado por valor e outro número x passado como ponteiro.
+- Retorna um número inteiro.
+- Decompõe o número n em fatores primos e armazena-os nas posições do vetor. O conteúdo de x deve receber o número de fatores
+primos encontrados. Caso o número de fatores encontrados seja maior que 10, a função deve retornar 1, do contrário deve 
+retornar 0. 
+obs: quis dar uma inovada pra ir gerando os primos conforme vai chegando no número n*/
+
 #include <stdio.h>
+#define MAX 30
 
-int function(int arr[], int n, int *x){
+int primos(int numero){
 
-    while(n != *arr){
-        if(n % *arr) {
-            n %= *arr;
-            *x += 1;
-        }
-        else {
-            *arr++;
-        }
+    int numTeste = 2; //valores de números primos
+
+    while(numTeste<numero){
+        for(int i=2;i<numTeste;i++)    
+            if(numTeste%i == 0) numTeste++;
+        return numTeste;
     }
 
-    if(*x > 10) return 1; 
+}
+
+int decomporFatores(int vect[], int n, int *x){
+
+    int primo = 2;
+    int i = 0;
+
+    while(primo < n){
+        vect[i] = primos(n);
+        (*x)++;
+        i++;
+    }
+
+    if(*x>10) return 1;
     else return 0;
 }
 
-
 int main(){
-    int fatores;
-    int arr1[30] = {2,3,5,7,11,13,17,19,23,29};
+    int quantPrimos;
+    int arr[MAX];
 
-    function(arr1, 39, &fatores);
+    decomporFatores(arr,50,&quantPrimos);
 
-    printf("%d", fatores);
-
+    printf("%d",quantPrimos);
 }

@@ -3,7 +3,10 @@
 #include <ctype.h>
 #include <string.h>
 
-void check(char (*numcmp)(const char)(const char), (*), int (*cmp)(const char*, const char*)){
+void check(char *a, char *b, int (*cmp)(const char*, const char*));
+int numcmp(const char *a, const char *b);
+
+void check(char *a, char *b, int (*cmp)(const char*, const char*)){
     printf("testando igualde\n");
     if(!(*cmp)(a,b))
         printf("igual");
@@ -34,3 +37,5 @@ void main(){
     else
         check(s1,s2,p2);
 }
+
+//tirar dúvida
