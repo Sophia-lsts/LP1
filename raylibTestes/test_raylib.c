@@ -28,8 +28,9 @@ int main(void) {
     // Loop de renderização para a segunda janela
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(GRAY);
-        DrawText("aqui vai ter a mágica", 200, 290, 20, DARKGRAY);
+        ClearBackground(PURPLE);
+        DrawText("aqui vai ter a mágica", 200, 290, 20, BLACK);
+        DrawLine(18,42,screenWidth2 - 18, 42, BLACK);
         EndDrawing();
 
         // Condição para fechar a segunda janela
