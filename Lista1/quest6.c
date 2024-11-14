@@ -9,27 +9,44 @@ obs: quis dar uma inovada pra ir gerando os primos conforme vai chegando no núm
 #include <stdio.h>
 #define MAX 30
 
-int primos(int numero){
+int primos(int lastP){
 
-    int numTeste = 2; //valores de números primos
+    if (lastP < 2) return 2; //menor fator primo
+    lastP++;
 
-    while(numTeste<numero){
-        for(int i=2;i<numTeste;i++)    
-            if(numTeste%i == 0) numTeste++;
-        return numTeste;
+    while (1) {
+        int i, yesno = 1;
+
+        for (i = 2; i * i <= lastP; i++) { //i representa os divisores enquanto seu quadrado for menor que o primo a ser testado,só encontra divisores até a raiz do número
+            if (lastP % i == 0) { //se for divisível por algum não é
+                yesno = 0;
+                break;
+            }
+        }
+
+        if (yesno) return lastP; //se for já volta
+        lastP++; //se não incrementa aq e faz td dnv
     }
-
 }
 
 int decomporFatores(int vect[], int n, int *x){
 
-    int primo = 2;
     int i = 0;
+    int menorFator;
 
-    while(primo < n){
-        vect[i] = primos(n);
-        (*x)++;
-        i++;
+    menorFator = 2;
+    while(n != 1 && menorFator <= n){
+        if(n % menorFator == 0) { //sempre começa testando pelo menos fator primo, o 2
+            vect[i] = menorFator;
+            n /= menorFator;
+            i++;
+            for(int j=0;j<i;j++){
+                if(j == i-1) (*x)++;
+                else if(menorFator == vect[j]) break;
+                else continue;
+            }
+        }
+        else menorFator = primos(menorFator);
     }
 
     if(*x>10) return 1;
@@ -37,10 +54,13 @@ int decomporFatores(int vect[], int n, int *x){
 }
 
 int main(){
-    int quantPrimos;
+    int quantPrimos = 0;
     int arr[MAX];
 
-    decomporFatores(arr,50,&quantPrimos);
+    decomporFatores(arr,2310,&quantPrimos); //testar números no lugar do 210
 
-    printf("%d",quantPrimos);
+    printf("Quantidade de fatores primos diferentes encontrados: %d\n", quantPrimos);
+    printf("Os diferentes fatores primos foram:");
+    for(int i=0;i<quantPrimos;i++) printf(" %d ",arr[i]);
+    
 }
