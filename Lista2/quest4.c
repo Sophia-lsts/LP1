@@ -5,11 +5,11 @@
 
 void liberaMemoria(int **matriz,int first){
 
-    int *ptr = *matriz;
-
-    for(int i = 0; i < first; i++) {
-        free(ptr);
-        *ptr++;
+    if(matriz != NULL){
+        for(int i = 0; i < first; i++) {
+            free(matriz[i]);
+        }
+    free(matriz);
     }
 }
 
@@ -17,7 +17,7 @@ int main(){
 
     //o código analisando é essa parte do main
 
-    int m=0, n=0;
+    int m=3, n=4;
     int **M = NULL;
     M = malloc (m * sizeof ( int *)); //alocando m ponteiros do tipo inteiro
     for(int i = 0; i < m; i++){
