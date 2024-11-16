@@ -2,12 +2,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+#include <pthread.h>
 #define tamCampo 5
 
-// ponteiro para armazenar quantidade de casas que o jogador conseguiu revelar
+// ponteiro para armazenar quantidade de 
+
+//casas que o jogador conseguiu revelar
 // struct para toda parte de arquivo, alocar memória pra ele e liberar depois de fechar o arquivo
 
-enum casas {Vazio = 0, umaProx = 1, duasProx = 2, tresProx = 3, quatroProx = 4, naoRevelado = 5, Bomba = 6};
+enum casas {Vazio = 0, umaProx = 1, duasProx = 2, tresProx = 3, quatroProx = 4, naoRevelado = 4, Bomba = 5};
 
 int M[tamCampo][tamCampo];
 int revelados[tamCampo][tamCampo] = {naoRevelado,naoRevelado,naoRevelado,naoRevelado,naoRevelado,
@@ -15,6 +18,9 @@ int revelados[tamCampo][tamCampo] = {naoRevelado,naoRevelado,naoRevelado,naoReve
                                     naoRevelado,naoRevelado,naoRevelado,naoRevelado,naoRevelado,
                                     naoRevelado,naoRevelado,naoRevelado,naoRevelado,naoRevelado,
                                     naoRevelado,naoRevelado,naoRevelado,naoRevelado,naoRevelado};
+
+int segundos;
+int lose = 1;
 
 void clean(){
     #ifdef _WIN32
@@ -24,22 +30,21 @@ void clean(){
     #endif
 }
 
-/*void timer(parametro encontrou bomba ou ganhou)
+void *timer(void* arg){
 
-    int segundos = 0;
-
-    while(parametro encontrou bomba ou ganhou verdadeiro segundos < 20){ // segundos < 20 só de teste
+    while(lose){ 
         printf("Your time: %d\r",segundos);
         fflush(stdout);
-
         sleep(1);
-
         segundos++;
     };
-*/
+
+    return NULL;
+}
 
 int verificaCoordenadas(int linha, int coluna) {
     if (linha < 0 || linha >= tamCampo || coluna < 0 || coluna >= tamCampo) return 0; 
+    //else if(M[i][j] != 0 || revelados[i][j] != -1) return 0;
     return 1; 
 }
 
@@ -137,19 +142,18 @@ void revela(int linha, int coluna){
     
 }
 
-int main(){
+void game(){
 
-    //timer();
     int linha, coluna;
-    int lose = 1;
 
     plantaBomba();
     preencheCampo();
 
+    printf("\n\n\n\n\n");
 
     while(lose){
         do{
-            printf("\nlin  ");
+            printf("\n\nlin  ");
             scanf("%d", &linha);
             printf("col  ");
             scanf("%d", &coluna);
@@ -157,11 +161,10 @@ int main(){
                 printf("Digite coordenadas válidas\n");
                 sleep(1);
                 }
-            else if(revelados[linha][coluna] != naoRevelado){
-                printf("Essa célula já foi selecionada.\n");
-            }
         }
-        while(!verificaCoordenadas(linha,coluna) || revelados[linha][coluna] != naoRevelado);
+        while(!verificaCoordenadas(linha,coluna) && revelados[linha][coluna] != naoRevelado);
+
+        clean();
 
         switch(M[linha][coluna]){
             case Bomba:
@@ -176,8 +179,6 @@ int main(){
             default:
                 revelados[linha][coluna] = M[linha][coluna];
         }
-
-        clean();
 
         printf("\n   |");
         for (int i = 0; i < tamCampo; i++) printf(" %d |",i);
@@ -207,6 +208,21 @@ int main(){
 
     }
     printf("\n\n");
+
+}
+
+int main(){
+
+    pthread_t thread_id;
+
+    if(pthread_create(&thread_id,NULL, timer, NULL) != 0){
+        perror("Erro ao criar a thread");
+        return 1;
+    }
+
+    game();
+
+    pthread_join(thread_id,NULL);
 
     return 0;
 
