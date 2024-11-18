@@ -17,7 +17,9 @@ int main(){
 
     int quantProdutos;
     float maiorPreço;
-    char string[50];
+    int maiorQuant;
+    char string1[50] = "";
+    char string2[50] = "";
 
     typedef struct{
         int codigoID;
@@ -33,34 +35,37 @@ int main(){
 
     printf("Digite as informações de cada produto: Código, Nome, Quantidade, Preço\n");
     for(int i=0;i<quantProdutos;i++){
-        scanf("%d", produtos[i].codigoID);
-        fgets(string,50,stdin);
-        strcpy(produtos[i].nomeProduto, string);
-        scanf("%d", produtos[i].quantidade);
-        scanf("%f\n", produtos[i].preço);
+        scanf("%d", &produtos[i].codigoID);
+        getchar(); //limpar o \n natural do scanf
+        fgets(produtos[i].nomeProduto,50,stdin); //diferente do scanf("%s"), ele não ignora os caracteres \n ou espaços em branco
+        produtos[i].nomeProduto[strcspn(produtos[i].nomeProduto, "\n")] = '\0'; //isso é obrigatório?
+        scanf("%d", &produtos[i].quantidade);
+        scanf("%f", &produtos[i].preço);
+        printf("\n");
     }
 
     maiorPreço = produtos[0].preço;
+    strcpy(string1, produtos[0].nomeProduto); //pq esses strcpy são necessários
+    maiorQuant = produtos[0].quantidade;
+    strcpy(string2, produtos[0].nomeProduto);
 
     for(int i=1;i<quantProdutos;i++){
         if(produtos[i].preço > maiorPreço) {
              maiorPreço = produtos[i].preço;
-             strcpy(string, produtos[i].nomeProduto);
+             strcpy(string1, produtos[i].nomeProduto);
         }
     }
 
-    printf("O produto com maior preço é %s custando %.2f \n",string, maiorPreço);
-
-    quantProdutos = produtos[0].quantidade;
+    printf("O produto com maior preço é %s custando %.2f \n",string1, maiorPreço);
 
     for(int i=1;i<quantProdutos;i++){
-        if(produtos[i].quantidade > quantProdutos) {
-             quantProdutos = produtos[i].quantidade;
-             strcpy(string, produtos[i].nomeProduto);
+        if(produtos[i].quantidade > maiorQuant) {
+             maiorQuant = produtos[i].quantidade;
+             strcpy(string2, produtos[i].nomeProduto);
         }
     }
 
-    printf("O produto com maior quantidade disponível no estoque é %s com %d unidades.", string, quantProdutos);
+    printf("O produto com maior quantidade disponível no estoque é %s com %d unidades.\n",string2, maiorQuant);
 
     return 0;
 
