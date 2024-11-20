@@ -1,21 +1,26 @@
-/*Escreva uma função em C que receba um número real passado como parâmetro, retorne a parte inteira e a parte fracionária desse número. Essa função deve obedecer ao protótipo:
+/*Escreva uma função em C que receba um número real passado como parâmetro, retorne a parte inteira e a parte fracionária desse número.
+Essa função deve obedecer ao protótipo:
 void frac(float num, int *parteInteira, int *parteFracionaria);*/
-
-//Dúvida: como a parte fracionária fica com valor int?
 
 #include <stdio.h>
 
-void frac(float num, int *parteInteira, int *parteFracionaria){
+void frac(float num, int *parteInteira, int *parteFracionaria) {
+    *parteInteira = (int)num;
 
+    float fracionaria = (num - *parteInteira) * 100000;
+
+    *parteFracionaria = (int)(fracionaria);  
 }
 
-int main(){
-
-    float número = 1/3;
+int main() {
+    float número = 8.0 / 3.5;  
     int inteiro;
-    float parteDecimal;
+    int parteDecimal;
 
-    frac(número,&inteiro,&parteDecimal);
+    frac(número, &inteiro, &parteDecimal);
+
+    printf("parte inteira: %d\n", inteiro);
+    printf("parte fracionária: %d\n", parteDecimal);
 
     return 0;
 }
